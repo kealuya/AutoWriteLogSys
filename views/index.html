@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>日志填写系统</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap -->
+  <link href="javascripts/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="javascripts/bootstrap-datepicker/css/datepicker3.css" rel="stylesheet" />
+  <link href="javascripts/jquery-mloading/jquery.mloading.css" rel="stylesheet" />
+  <link href='stylesheets/style.css' rel='stylesheet' />
+  <style type="text/css">
+    div {
+      border solid red
+    }
+  </style>
+</head>
+
+<body style="background:#000; color:#FFF">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-5 col-md-offset-1">
+        <h1>日志填写系统</h1>
+        <h1></h1>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-5 col-md-offset-1">
+        <!-- content start -->
+        <div class="row">
+          <div class="col-md-2">
+            <p class="text-right">用户名：</p>
+          </div>
+          <div class="col-md-9">
+            <input type="text" style="color:black;" name="username">
+          </div>
+        </div>
+        <br>
+        <div class="row">
+          <div class="col-md-2">
+            <p class="text-right">密码：</p>
+          </div>
+          <div class="col-md-9">
+            <input type="text" style="color:black;" name="password">
+          </div>
+        </div>
+        <br>
+        <div class="row" name="d1" style="display:none">
+          <div class="col-md-5">选择要填写的日期：</div>
+        </div>
+        <br>
+        <div class="row" name="d1" style="display:none">
+          <div class="col-md-3">
+            <div class="input-group   date-picker input-daterange">
+              <input type="text" class="form-control" name="timeRange" placeholder="时间">
+            </div>
+          </div>
+        </div>
+        <br>
+        <br>
+        <div class="row" name="d2" style="display:none">
+          <div class="col-md-12">
+            根据当前项目
+            <input type="text" style="color:black;" name="projectName">自动生成
+          </div>
+        </div>
+        <br>
+        <br>
+        <div class="row" name="d2" style="display:none">
+          <div class="col-md-12">
+            <button class="btn btn-default" name="submitBtn">自动生成</button>
+          </div>
+        </div>
+        <br>
+        <br>
+        <div class="row" name="d3" style="display:none">
+          <div class="col-md-12">
+            <button class="btn btn-default" name="goBtn">发送</button>
+          </div>
+        </div>
+        <br>
+        <div name="msg" style="display:none;width:400px;height:600px;border-width:2px;border-style:solid;border-color:whitesmoke;overflow:auto;">
+
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <!-- content start -->
+        <br>
+        <br>
+
+        <form class="form-horizontal">
+        </form>
+        <div class="row">
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+  <!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
+  <script src="javascripts/jquery-3.2.0.js"></script>
+  <!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
+  <script src="javascripts/bootstrap/js/bootstrap.min.js"></script>
+  <script src="javascripts/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+  <script src="javascripts/bootstrap-datepicker/js/bootstrap-datepicker.zh-CN.js"></script>
+  <script src="javascripts/jquery-mloading/jquery.mloading.js"></script>
+  <script>
+    var IndexObj = function () {
+      var canSubmit = false;
+      var monthDays = 0;
+      var year_month = "";
+      var year = "";
+      var month = "";
+      var handleDatePickers = function () {
+        if (jQuery().datepicker) {
+          $('.date-picker').datepicker({
+            todayHighlight: true,
+            format: 'yyyy/mm',
+            //startDate : new Date(),
+            endDate: "2099/12/31",
+            autoclose: true,
+            startView: 'months',
+            maxViewMode: 'months',
+            minViewMode: 'months',
+            language: 'zh-CN'
+          }).on('changeDate', function (e) {
+            if (e.date != undefined) {
+              $("[name=d2]").fadeIn("slow");
+              $("[name=d3]").fadeIn("slow");
+              $("[name=msg]").fadeIn("slow");
+              monthDays = mGetDate(e.date);
+              initWorkContent(monthDays, e.date);
+            }
+          });
+        }
+      };
+
+      var handleProjectName = function () {
+        $("[name=submitBtn]").on("click", function () {
+          var pn_val = $("[name=projectName]").val();
+          if (pn_val.trim() == "") {
+            alert("请填入项目名称");
+            return;
+          } else {
+            var str1 = "根据客户要求对" + pn_val + "进行设计，相关业务知识学习中。";
+            var str2 = "根据" + pn_val + "的业务特点，建立技术框架，并对各个模块的基本业务进行开发。";
+            var str3 = "随时和客户保持联系，及时了解客户对产品的最新意见，积极改进" + pn_val + "。";
+            var str4 = pn_val + "业务的独立模块开发中，并同时进行测试。";
+
+            $("form.form-horizontal [name=workContent]").each(
+              function (index, element) {
+                if ($(element).attr('placeholder')) {
+                  return;
+                }
+                if (index < 7) {
+                  $(element).val(str1);
+                } else if (index < 14) {
+                  $(element).val(str2);
+                } else if (index < 21) {
+                  $(element).val(str3);
+                } else {
+                  $(element).val(str4);
+                }
+              }
+            );
+          }
+        })
+      }
+      var handleGoBtn = function () {
+        var userInfo = {};
+        var logArray = [];
+        $("[name=goBtn]").on("click", function () {
+          if (!canSubmit) {
+            alert("无法发送");
+            return;
+          }
+          if ($("[name=username]").val() == "" || $("[name=password]").val() == "") {
+            alert("用户名或密码为空");
+            return;
+          }
+
+          if ($("[name=timeRange]").val() == "") {
+            alert("请选择月份");
+            return;
+          }
+          var to = new Date();
+          logArray = $("form.form-horizontal [name=workContent]").map(function (index, ele, arr) {
+            var tempDate = new Date(year,month, index + 1);
+            if (tempDate > to) {
+              ;
+            } else {
+              var logObj =
+                {
+                  TextBoxRq: year_month + (index + 1) + "日",
+                  TextBoxxmnr: $(ele).val()
+                }
+
+              return logObj;
+            }
+          });
+          userInfo.username = $("[name=username]").val();
+          userInfo.password = $("[name=password]").val();
+
+
+          $('body').mLoading({
+            text: "发送中。。。。",//加载文字，默认值：加载中...
+          });
+          $.ajax({
+            type: "POST",
+            url: "/go",
+            dataType: "json",
+            data: { 'logArray': JSON.stringify(logArray), 'userInfo': JSON.stringify(userInfo) },
+            success: function (data) {
+              if (Array.isArray(data.returnMsg)) {
+                var returnMsgArr = data.returnMsg.join('<br>');
+                $("[name=msg]").html(returnMsgArr);
+              } else {
+                $("[name=msg]").html(data.returnMsg);
+              }
+              $("body").mLoading("hide");
+            },
+            error: function (e) {
+              $("[name=msg]").html(e.statusText);
+              $("body").mLoading("hide");
+            }
+          });
+
+        })
+      }
+
+
+      function mGetDate(timeRange) {
+        if (timeRange == undefined) {
+          $("[name=goBtn]").css('display', 'none');
+          canSubmit = false;
+          $("form.form-horizontal").css('display', 'none');
+          return;
+        }
+        year_month = timeRange.getFullYear() + "年" + (timeRange.getMonth() + 1) + "月";
+        var d = new Date(timeRange.getFullYear(), timeRange.getMonth() + 1, 0);
+        return d.getDate();
+      }
+      function htmlEncodeJQ(str) {
+        return $('<span/>').text(str).html();
+      }
+      function initWorkContent(monthDays, date) {
+        if (monthDays == undefined) {
+          return;
+        }
+        var strHtml = "";
+        year = date.getFullYear();
+        month = date.getMonth();
+        for (var i = 1; i <= monthDays; i++) {
+          var today = new Date(year, month, i);
+          var ph = "";
+          if (today.getDay() == 0 || today.getDay() == 6) {
+            ph = ' placeholder="周末" ';
+          }
+          var strHtmlArr = [
+            '<div class="form-group">',
+            '<label class="col-md-2 control-label">' + i + '日：</label>',
+            '<div class="col-md-8">',
+            '<input type="text" name="workContent" class="form-control" ' + ph + ' >',
+            '</div>',
+            '</div>'
+          ];
+          strHtml += strHtmlArr.join('');
+        }
+        $("form.form-horizontal").empty();
+        $("form.form-horizontal").css('display', 'none');
+        $("form.form-horizontal").append(strHtml);
+        $("form.form-horizontal").fadeIn("slow");
+        $("[name=goBtn]").fadeIn("slow");
+        canSubmit = true;
+      }
+
+
+
+      var handleInit = function () {
+        var n = "";
+        var p = "";
+        $("[name=username]").on("change", function () {
+          n = $(this).val();
+          if (n != "" && p != "") {
+            $("[name=d1]").fadeIn("slow");
+          }
+        })
+        $("[name=password]").on("change", function () {
+          p = $(this).val();
+          if (n != "" && p != "") {
+            $("[name=d1]").fadeIn("slow");
+          }
+        })
+      }
+
+      return {
+        init: function () {
+          handleInit();
+          handleDatePickers();
+          handleProjectName();
+          handleGoBtn();
+        }
+      };
+
+    }();
+
+    jQuery(document).ready(
+      function () {
+        IndexObj.init();
+      }
+    );
+  </script>
+</body>
+
+</html>
